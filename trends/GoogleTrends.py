@@ -1,11 +1,18 @@
-from pytrends.request import TrendReq
-from matplotlib import pyplot as plt
+from bs4 import BeautifulSoup
+import time
+from selenium import webdriver
+from selenium.webdriver.edge.service import Service
+from selenium.webdriver.edge.options import Options
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
-pytrends = TrendReq(hl='zh-TW', tz=480)  
+options = Options()
+options.use_chromium = True
 
-keywords = ["Python Programming", "Data Science", "Machine Learning"]
-pytrends.build_payload(kw_list=keywords, timeframe='today 12-m', geo='TW')
+# 用 webdriver_manager 取得正确版本的 msedgedriver 路径
+edge_driver_path = EdgeChromiumDriverManager().install()
+service = Service(edge_driver_path)
+driver = webdriver.Edge(service=service, options=options)
+driver.get("https://trends.google.com.tw/trending?geo=TW&hl=zh-TW")
 
-trending_searches_df = pytrends.trending_searches(pn='taiwan')
-# Display trending searches
-print(trending_searches_df)
+input("按 Enter 鍵退出...")
+driver.quit()
