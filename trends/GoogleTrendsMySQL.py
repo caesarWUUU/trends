@@ -116,8 +116,6 @@ service = Service(edge_driver_path)
 driver = webdriver.Edge(service=service, options=options)
 driver.get(url)
 driver.maximize_window()
-time.sleep(8)
-driver.get(url)
 time.sleep(10)
 
 soup = BeautifulSoup(driver.page_source, 'html.parser')
