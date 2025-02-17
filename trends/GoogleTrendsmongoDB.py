@@ -7,6 +7,11 @@ from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 import json
+from pymongo import MongoClient
+
+# 連接到 MongoDB
+client = MongoClient("mongodb://localhost:27017/")  # 預設連接到本機的 MongoDB
+
 
 options = Options()
 options.use_chromium = True
@@ -34,8 +39,6 @@ service = Service(edge_driver_path)
 driver = webdriver.Edge(service=service, options=options)
 driver.get(url)
 driver.maximize_window()
-time.sleep(8)
-driver.get(url)
 time.sleep(10)
 
 soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -69,18 +72,12 @@ for title_tag, volume_tag in zip(titles, SearchVolumes):
     title = title_tag.get_text().strip()
     volume_text = volume_tag.get_text().strip()
     intSV = parse_search_volume(volume_text)
-    trends.append({
+    client.googletrends.trends.insert_one({
+        "date": formatted_date,
         "title": title,
         "searchVolume": intSV
     })
 
-# 以日期為 key 建立大字典
-data = {
-    formatted_date: trends
-}
-
-# 輸出結果（使用 JSON 格式化印出方便閱讀）
-print(json.dumps(data, ensure_ascii=False, indent=2))
-
+print("資料已存入 MongoDB")
 input("按 Enter 鍵退出...")
 driver.quit()
